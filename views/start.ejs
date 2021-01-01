@@ -1,0 +1,115 @@
+<html>
+    <head>
+        <title>Homepage</title>
+        <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="/public/styles.css" type="text/css">
+	    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    </head>
+    <body>
+        <div style="max-width: 1200px; margin: 60px auto; padding: 10px;">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-xs-offset-2 col-xs-8">
+                        <span class="minute"><%= Math.floor(quiz.time) %></span>:
+                        <span class="second"><%= (quiz.time*60)%60 %></span>
+                        <form method="POST" action="/submit">
+                            <% for(var i=0;i<quiz.noOfQuestions;i++){ %>
+                                <div class="form-group">
+                                    <% var name="q"+(i+1); %>
+                                    <div style="border: 2px solid blue;">
+                                        <p><%= quiz.questions[i].question %></p>
+                                    </div>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="ans<%= i %>" value="<%= quiz.questions[i].options[0] %>">
+                                        A) <%= quiz.questions[i].options[0] %>
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="ans<%= i %>" value="<%= quiz.questions[i].options[1] %>">
+                                        B) <%= quiz.questions[i].options[1] %>
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="ans<%= i %>" value="<%= quiz.questions[i].options[2] %>">
+                                        C) <%= quiz.questions[i].options[2] %>
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="ans<%= i %>" value="<%= quiz.questions[i].options[3] %>">
+                                        D) <%= quiz.questions[i].options[3] %>
+                                    </label>
+                                </div>
+                            <% } %>
+                            <input type="submit" value="Submit" class="btn btn-primary">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                var finish = function(){
+                    console.log("Pakistani");
+                    var noOfQuestions = parseInt('<%= quiz.noOfQuestions %>');
+                    var answers = Array(noOfQuestions).fill("");
+                    for(var i=0;i<noOfQuestions;i++)
+                    {
+                        var ans = $("input[name='ans"+i+"']:checked").val();
+                        if(ans!==undefined)
+                            answers[i]=ans;
+                        else
+                            answers[i]="";
+                    }
+                    console.log(answers);
+                    var res;
+                    $.ajax({
+                        type: 'POST',
+                        url: '/submit',
+                        data: {
+                            answers: answers,
+                            id: '<%= quiz._id %>'
+                        },
+                        success: function(data){
+                            res = data;
+                            window.location.replace('/result/'+'<%= quiz._id %>');
+                        }/*,
+                        complete: function(){
+                            console.log("res=");
+                            console.log(res);
+                            $.ajax({
+                                type: 'POST',
+                                url: '/result',
+                                data: {
+                                    attempt: res
+                                },
+                                success: function(html){
+                                    console.log("html=");
+                                    console.log(html);
+                                    //window.location.reload();
+                                    $(document).html(html);
+                                }
+                            });
+                        }*/
+                    });
+                    return false;
+                };
+
+                var time = parseFloat('<%= quiz.time %>')*60;//secs
+                var min = Math.floor(time);
+                var sec = time-min;
+                
+                var timer = setInterval(function(){
+                    time--;
+                    $(".minute").text(Math.floor(time/60));
+                    $(".second").text(time%60);
+                    if(time<=0)
+                    {
+                        clearInterval(timer);
+                        finish();
+                    }
+                },1000);
+
+                $("form").on("submit",finish);
+            });
+        </script>
+    </body>
+</html>

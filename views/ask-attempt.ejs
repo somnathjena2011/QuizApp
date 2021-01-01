@@ -1,0 +1,80 @@
+<html>
+    <head>
+        <title>Homepage</title>
+        <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="/public/styles.css" type="text/css">
+	    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    </head>
+    <body>
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <a href="/" class="navbar-brand">Home</a>
+                    <button class="navbar-toggle collapsed" data-toggle="collapse" data-target="#mob-dropdown">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+                <div class="collapse navbar-collapse" id="mob-dropdown">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/profile">Profile</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Quizzes<span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/general">General</a></li>
+                                <li><a href="/mela">MELA</a></li>
+                                <li><a href="/sports">Sports</a></li>
+                                <li><a href="/scitech">Sci-Tech</a></li>
+                                <li><a href="/india">India</a></li>
+                            </ul>
+                            <div class="clear"></div>
+                        </li>
+                        <li><a href="/create">Create</a></li>
+                    </ul>
+                    <button class="btn btn-primary navbar-btn navbar-right">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <div style="max-width: 1200px; margin: 60px auto; padding: 10px;">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-xs-offset-2 col-xs-8">
+                        <form method="POST"">
+                            <div class="form-group">
+                                <h1><%= quiz.title %></h1>
+                                <h2><%= quiz.author.username %></h2>
+                                <h2>No of questions= <%= quiz.noOfQuestions %></h2>
+                                <h2>Time= <%= quiz.time*60 %> secs</h2>
+                            </div>
+                            <input type="submit" value="Attempt?" class="btn btn-primary">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $("form").on("submit",function(){
+                    var id = '<%= quiz._id %>';
+                    console.log("id="+id);
+                    $.ajax({
+                        type: 'POST',
+                        url: '/attempt',
+                        data: {
+                            id: id
+                        },
+                        success: function(data){
+                            window.location.replace(data);
+                        }
+                    });
+                    return false;
+                });
+            });
+        </script>
+    </body>
+</html>
