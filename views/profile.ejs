@@ -42,18 +42,9 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-xs-offset-2 col-xs-8">
-                        <h1><%= category %> quizzes:</h1>
-                        <ul class="list-group">
-                            <% quizzes.forEach(function(quiz){ %>
-                                <% var cls; %>
-                                <% if(quiz.takers.includes(user)||quiz.author._id.toString()===user) %>
-                                <% cls="disabled"; %>
-                                <li class="list-group-item list-group-item-primary">
-                                    <a href="/attempt/<%= quiz._id.toString() %>" class="btn <%= cls %>"><%= quiz.title %></a>
-                                    <a href="/profile?id=<%= quiz.author._id.toString() %>" style="float: right;"><%= quiz.author.username %></a>
-                                </li>
-                            <% }); %>
-                        </ul>
+                        Name: <%= username %><br>
+                        Country: <%= country %><br>
+                        Rating: <%= rating %> 
                     </div>
                 </div>
             </div>

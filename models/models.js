@@ -57,6 +57,9 @@ const QuizSchema = new Schema({
     average: {
         type: Number,
         default: 0.0
+    },
+    takers: {
+        type: [String]
     }
 });
 const UserSchema = new Schema({

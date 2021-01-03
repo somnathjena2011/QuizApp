@@ -229,7 +229,8 @@ categories.forEach(function(cat){
             //console.log("id="+quizzes[0]._id.toString());
             res.render('quizzes',{
                 category: cat,
-                quizzes: quizzes
+                quizzes: quizzes,
+                user: req.user._id.toString()
             });
         });
     });
@@ -237,9 +238,13 @@ categories.forEach(function(cat){
 
 router.get('/attempt/:id',loggedIn,function(req,res,next){
     Quiz.findById(/*mongoose.Types.ObjectId(req.params.id)*/req.params.id,function(err,quiz){
-        res.render('ask-attempt',{
-            quiz: quiz
-        });
+        if(quiz.takers.includes(user)||quiz.authot._id.toString()===req.user._id.toString())
+            res.status(404).send("Sorry, you cannot take the quiz\n<a href='/home'>Home</a>");
+        else{
+            res.render('ask-attempt',{
+                quiz: quiz
+            });
+        }
     });
 });
 
@@ -266,6 +271,7 @@ router.post('/submit',loggedIn,function(req,res,next){
     Quiz.findById(id,function(err,quiz){
         if(err || quiz==null)
             return next();
+        quiz.takers.push(req.user._id.toString());
         for(var i=0;i<quiz.noOfQuestions;i++){
             var correct = quiz.questions[i].answer;
             var answer = answers[i];
@@ -313,6 +319,23 @@ router.get('/result/:id',loggedIn,function(req,res,next){
         });
     });
     //attempt = [];
+});
+
+router.get('/profile',loggedIn,function(req,res,next){
+    var id;
+    if(req.query.id)
+        id=req.query.id;
+    else
+        id=req.user._id.toString();
+    User.findById(id,function(err,user){
+        if(err||user==null)
+            return next();
+        res.render('profile',{
+            username: user.username,
+            country: user.country,
+            rating: user.rating
+        });
+    });
 });
 
 module.exports = router;
